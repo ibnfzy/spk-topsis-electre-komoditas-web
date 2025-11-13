@@ -6,9 +6,11 @@ use CodeIgniter\Router\RouteCollection;
  * @var RouteCollection $routes
  */
 $routes->get('/', 'Home::index');
-$routes->get('login', 'Home::login');
+$routes->get('login', 'Auth::login');
+$routes->post('login', 'Auth::attempt');
+$routes->get('logout', 'Auth::logout');
 
-$routes->group('panel', ['namespace' => 'App\\Controllers\\Panel'], static function ($routes) {
+$routes->group('panel', ['namespace' => 'App\\Controllers\\Panel', 'filter' => 'auth'], static function ($routes) {
     $routes->get('/', 'DashboardController::index');
     $routes->get('dashboard', 'DashboardController::index');
     // Komoditas Tambak CRUD
