@@ -3,6 +3,7 @@
 namespace App\Controllers\Panel;
 
 use App\Models\KriteriaModel;
+use CodeIgniter\Exceptions\PageNotFoundException;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class KriteriaController extends BaseResourceController
@@ -14,9 +15,17 @@ class KriteriaController extends BaseResourceController
         $this->model = new KriteriaModel();
     }
 
-    public function index(): ResponseInterface
+    public function index()
     {
-        return $this->respondSuccess(['data' => $this->model->findAll()]);
+        if ($this->wantsJSON()) {
+            return $this->respondSuccess(['data' => $this->model->findAll()]);
+        }
+
+        return view('panel/kriteria/index', [
+            'title'       => 'Manajemen Kriteria',
+            'pageTitle'   => 'Daftar Kriteria',
+            'description' => 'Kelola parameter penilaian yang digunakan dalam metode TOPSIS & ELECTRE.',
+        ]);
     }
 
     public function show(int $id): ResponseInterface
@@ -65,6 +74,33 @@ class KriteriaController extends BaseResourceController
 
         return $this->respondSuccess([
             'message' => 'Kriteria berhasil dihapus.',
+        ]);
+    }
+
+    public function new(): string
+    {
+        return view('panel/kriteria/form', [
+            'title'        => 'Tambah Kriteria',
+            'pageTitle'    => 'Tambah Kriteria',
+            'formAction'   => base_url('panel/kriteria'),
+            'submitMethod' => 'POST',
+            'record'       => null,
+        ]);
+    }
+
+    public function edit(int $id): string
+    {
+        $record = $this->model->find($id);
+        if (!$record) {
+            throw PageNotFoundException::forPageNotFound('Kriteria tidak ditemukan.');
+        }
+
+        return view('panel/kriteria/form', [
+            'title'        => 'Edit Kriteria',
+            'pageTitle'    => 'Ubah Kriteria',
+            'formAction'   => base_url('panel/kriteria/' . $id),
+            'submitMethod' => 'PUT',
+            'record'       => $record,
         ]);
     }
 }

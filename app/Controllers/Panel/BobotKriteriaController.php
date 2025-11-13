@@ -3,6 +3,8 @@
 namespace App\Controllers\Panel;
 
 use App\Models\BobotKriteriaModel;
+use App\Models\KriteriaModel;
+use CodeIgniter\Exceptions\PageNotFoundException;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class BobotKriteriaController extends BaseResourceController
@@ -14,9 +16,22 @@ class BobotKriteriaController extends BaseResourceController
         $this->model = new BobotKriteriaModel();
     }
 
-    public function index(): ResponseInterface
+    public function index()
     {
-        return $this->respondSuccess(['data' => $this->model->findAll()]);
+        if ($this->wantsJSON()) {
+            $records = $this->model
+                ->select('bobot_kriteria.*, kriteria.nama_kriteria')
+                ->join('kriteria', 'kriteria.id = bobot_kriteria.kriteria_id', 'left')
+                ->findAll();
+
+            return $this->respondSuccess(['data' => $records]);
+        }
+
+        return view('panel/bobot_kriteria/index', [
+            'title'       => 'Bobot Kriteria',
+            'pageTitle'   => 'Bobot Kriteria',
+            'description' => 'Kelola bobot preferensi untuk setiap kriteria penilaian.',
+        ]);
     }
 
     public function show(int $id): ResponseInterface
@@ -66,5 +81,41 @@ class BobotKriteriaController extends BaseResourceController
         return $this->respondSuccess([
             'message' => 'Bobot kriteria berhasil dihapus.',
         ]);
+    }
+
+    public function new(): string
+    {
+        return view('panel/bobot_kriteria/form', [
+            'title'            => 'Tambah Bobot Kriteria',
+            'pageTitle'        => 'Tambah Bobot',
+            'formAction'       => base_url('panel/bobot-kriteria'),
+            'submitMethod'     => 'POST',
+            'record'           => null,
+            'kriteriaOptions'  => $this->kriteriaOptions(),
+        ]);
+    }
+
+    public function edit(int $id): string
+    {
+        $record = $this->model->find($id);
+        if (!$record) {
+            throw PageNotFoundException::forPageNotFound('Bobot kriteria tidak ditemukan.');
+        }
+
+        return view('panel/bobot_kriteria/form', [
+            'title'            => 'Edit Bobot Kriteria',
+            'pageTitle'        => 'Ubah Bobot',
+            'formAction'       => base_url('panel/bobot-kriteria/' . $id),
+            'submitMethod'     => 'PUT',
+            'record'           => $record,
+            'kriteriaOptions'  => $this->kriteriaOptions(),
+        ]);
+    }
+
+    private function kriteriaOptions(): array
+    {
+        $kriteriaModel = new KriteriaModel();
+
+        return $kriteriaModel->select('id, nama_kriteria')->orderBy('nama_kriteria')->findAll();
     }
 }
