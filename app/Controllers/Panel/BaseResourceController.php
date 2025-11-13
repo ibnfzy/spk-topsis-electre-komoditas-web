@@ -7,6 +7,15 @@ use CodeIgniter\HTTP\ResponseInterface;
 
 abstract class BaseResourceController extends BaseController
 {
+    protected function wantsJSON(): bool
+    {
+        $acceptHeader = $this->request->getHeaderLine('Accept');
+
+        return $this->request->isAJAX()
+            || str_contains($acceptHeader, 'application/json')
+            || ($this->request->getGet('format') && strtolower($this->request->getGet('format')) === 'json');
+    }
+
     protected function getRequestInput(): array
     {
         $input = $this->request->getJSON(true);

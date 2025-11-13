@@ -15,6 +15,8 @@ $routes->group('panel', ['namespace' => 'App\\Controllers\\Panel', 'filter' => '
     $routes->get('dashboard', 'DashboardController::index');
     // Komoditas Tambak CRUD
     $routes->get('komoditas', 'KomoditasController::index');
+    $routes->get('komoditas/tambah', 'KomoditasController::new');
+    $routes->get('komoditas/(:num)/edit', 'KomoditasController::edit/$1');
     $routes->get('komoditas/(:num)', 'KomoditasController::show/$1');
     $routes->post('komoditas', 'KomoditasController::store');
     $routes->put('komoditas/(:num)', 'KomoditasController::update/$1');
@@ -23,6 +25,8 @@ $routes->group('panel', ['namespace' => 'App\\Controllers\\Panel', 'filter' => '
 
     // Users CRUD
     $routes->get('users', 'UsersController::index');
+    $routes->get('users/tambah', 'UsersController::new');
+    $routes->get('users/(:num)/edit', 'UsersController::edit/$1');
     $routes->get('users/(:num)', 'UsersController::show/$1');
     $routes->post('users', 'UsersController::store');
     $routes->put('users/(:num)', 'UsersController::update/$1');
@@ -31,6 +35,8 @@ $routes->group('panel', ['namespace' => 'App\\Controllers\\Panel', 'filter' => '
 
     // Kriteria CRUD
     $routes->get('kriteria', 'KriteriaController::index');
+    $routes->get('kriteria/tambah', 'KriteriaController::new');
+    $routes->get('kriteria/(:num)/edit', 'KriteriaController::edit/$1');
     $routes->get('kriteria/(:num)', 'KriteriaController::show/$1');
     $routes->post('kriteria', 'KriteriaController::store');
     $routes->put('kriteria/(:num)', 'KriteriaController::update/$1');
@@ -39,6 +45,8 @@ $routes->group('panel', ['namespace' => 'App\\Controllers\\Panel', 'filter' => '
 
     // Nilai Kriteria CRUD
     $routes->get('nilai-kriteria', 'NilaiKriteriaController::index');
+    $routes->get('nilai-kriteria/tambah', 'NilaiKriteriaController::new');
+    $routes->get('nilai-kriteria/(:num)/edit', 'NilaiKriteriaController::edit/$1');
     $routes->get('nilai-kriteria/(:num)', 'NilaiKriteriaController::show/$1');
     $routes->post('nilai-kriteria', 'NilaiKriteriaController::store');
     $routes->put('nilai-kriteria/(:num)', 'NilaiKriteriaController::update/$1');
@@ -47,6 +55,8 @@ $routes->group('panel', ['namespace' => 'App\\Controllers\\Panel', 'filter' => '
 
     // Bobot Kriteria CRUD
     $routes->get('bobot-kriteria', 'BobotKriteriaController::index');
+    $routes->get('bobot-kriteria/tambah', 'BobotKriteriaController::new');
+    $routes->get('bobot-kriteria/(:num)/edit', 'BobotKriteriaController::edit/$1');
     $routes->get('bobot-kriteria/(:num)', 'BobotKriteriaController::show/$1');
     $routes->post('bobot-kriteria', 'BobotKriteriaController::store');
     $routes->put('bobot-kriteria/(:num)', 'BobotKriteriaController::update/$1');

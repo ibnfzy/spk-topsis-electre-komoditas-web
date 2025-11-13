@@ -3,6 +3,7 @@
 namespace App\Controllers\Panel;
 
 use App\Models\KomoditasTambakModel;
+use CodeIgniter\Exceptions\PageNotFoundException;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class KomoditasController extends BaseResourceController
@@ -14,9 +15,17 @@ class KomoditasController extends BaseResourceController
         $this->model = new KomoditasTambakModel();
     }
 
-    public function index(): ResponseInterface
+    public function index()
     {
-        return $this->respondSuccess(['data' => $this->model->findAll()]);
+        if ($this->wantsJSON()) {
+            return $this->respondSuccess(['data' => $this->model->findAll()]);
+        }
+
+        return view('panel/komoditas/index', [
+            'title'       => 'Manajemen Komoditas Tambak',
+            'pageTitle'   => 'Komoditas Tambak',
+            'description' => 'Kelola daftar komoditas tambak lengkap dengan informasi kategori dan deskripsi.',
+        ]);
     }
 
     public function show(int $id): ResponseInterface
@@ -65,6 +74,33 @@ class KomoditasController extends BaseResourceController
 
         return $this->respondSuccess([
             'message' => 'Komoditas tambak berhasil dihapus.',
+        ]);
+    }
+
+    public function new(): string
+    {
+        return view('panel/komoditas/form', [
+            'title'        => 'Tambah Komoditas Tambak',
+            'pageTitle'    => 'Tambah Komoditas',
+            'formAction'   => base_url('panel/komoditas'),
+            'submitMethod' => 'POST',
+            'record'       => null,
+        ]);
+    }
+
+    public function edit(int $id): string
+    {
+        $record = $this->model->find($id);
+        if (!$record) {
+            throw PageNotFoundException::forPageNotFound('Komoditas tambak tidak ditemukan.');
+        }
+
+        return view('panel/komoditas/form', [
+            'title'        => 'Edit Komoditas Tambak',
+            'pageTitle'    => 'Ubah Komoditas',
+            'formAction'   => base_url('panel/komoditas/' . $id),
+            'submitMethod' => 'PUT',
+            'record'       => $record,
         ]);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Controllers\Panel;
 
 use App\Models\UserModel;
+use CodeIgniter\Exceptions\PageNotFoundException;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class UsersController extends BaseResourceController
@@ -14,9 +15,17 @@ class UsersController extends BaseResourceController
         $this->model = new UserModel();
     }
 
-    public function index(): ResponseInterface
+    public function index()
     {
-        return $this->respondSuccess(['data' => $this->model->findAll()]);
+        if ($this->wantsJSON()) {
+            return $this->respondSuccess(['data' => $this->model->findAll()]);
+        }
+
+        return view('panel/users/index', [
+            'title'       => 'Manajemen Pengguna',
+            'pageTitle'   => 'Pengguna Sistem',
+            'description' => 'Atur akun pengguna yang memiliki akses ke panel administrasi.',
+        ]);
     }
 
     public function show(int $id): ResponseInterface
@@ -69,6 +78,35 @@ class UsersController extends BaseResourceController
 
         return $this->respondSuccess([
             'message' => 'Pengguna berhasil dihapus.',
+        ]);
+    }
+
+    public function new(): string
+    {
+        return view('panel/users/form', [
+            'title'        => 'Tambah Pengguna',
+            'pageTitle'    => 'Tambah Pengguna',
+            'formAction'   => base_url('panel/users'),
+            'submitMethod' => 'POST',
+            'record'       => null,
+        ]);
+    }
+
+    public function edit(int $id): string
+    {
+        $record = $this->model->find($id);
+        if (!$record) {
+            throw PageNotFoundException::forPageNotFound('Pengguna tidak ditemukan.');
+        }
+
+        unset($record['password']);
+
+        return view('panel/users/form', [
+            'title'        => 'Edit Pengguna',
+            'pageTitle'    => 'Ubah Pengguna',
+            'formAction'   => base_url('panel/users/' . $id),
+            'submitMethod' => 'PUT',
+            'record'       => $record,
         ]);
     }
 
