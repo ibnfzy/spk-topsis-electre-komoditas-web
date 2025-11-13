@@ -9,6 +9,8 @@ $routes->get('/', 'Home::index');
 $routes->get('login', 'Home::login');
 
 $routes->group('panel', ['namespace' => 'App\\Controllers\\Panel'], static function ($routes) {
+    $routes->get('/', 'DashboardController::index');
+    $routes->get('dashboard', 'DashboardController::index');
     // Komoditas Tambak CRUD
     $routes->get('komoditas', 'KomoditasController::index');
     $routes->get('komoditas/(:num)', 'KomoditasController::show/$1');
