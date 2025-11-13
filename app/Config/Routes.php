@@ -72,4 +72,10 @@ $routes->group('panel', ['namespace' => 'App\\Controllers\\Panel'], static funct
     $routes->put('perbandingan-metode/(:num)', 'PerbandinganMetodeController::update/$1');
     $routes->patch('perbandingan-metode/(:num)', 'PerbandinganMetodeController::update/$1');
     $routes->delete('perbandingan-metode/(:num)', 'PerbandinganMetodeController::delete/$1');
+
+    $routes->group('spk', static function ($routes) {
+        $routes->post('topsis', 'Spk\\TopsisSpkController::hitung');
+        $routes->post('electre', 'Spk\\ElectreSpkController::hitung');
+        $routes->post('bandingkan', 'Spk\\PerbandinganSpkController::bandingkan');
+    });
 });
