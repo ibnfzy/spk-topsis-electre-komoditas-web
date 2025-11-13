@@ -53,30 +53,6 @@ $routes->group('panel', ['namespace' => 'App\\Controllers\\Panel', 'filter' => '
     $routes->patch('bobot-kriteria/(:num)', 'BobotKriteriaController::update/$1');
     $routes->delete('bobot-kriteria/(:num)', 'BobotKriteriaController::delete/$1');
 
-    // Hasil TOPSIS CRUD
-    $routes->get('topsis', 'TopsisController::index');
-    $routes->get('topsis/(:num)', 'TopsisController::show/$1');
-    $routes->post('topsis', 'TopsisController::store');
-    $routes->put('topsis/(:num)', 'TopsisController::update/$1');
-    $routes->patch('topsis/(:num)', 'TopsisController::update/$1');
-    $routes->delete('topsis/(:num)', 'TopsisController::delete/$1');
-
-    // Hasil ELECTRE CRUD
-    $routes->get('electre', 'ElectreController::index');
-    $routes->get('electre/(:num)', 'ElectreController::show/$1');
-    $routes->post('electre', 'ElectreController::store');
-    $routes->put('electre/(:num)', 'ElectreController::update/$1');
-    $routes->patch('electre/(:num)', 'ElectreController::update/$1');
-    $routes->delete('electre/(:num)', 'ElectreController::delete/$1');
-
-    // Perbandingan Metode CRUD
-    $routes->get('perbandingan-metode', 'PerbandinganMetodeController::index');
-    $routes->get('perbandingan-metode/(:num)', 'PerbandinganMetodeController::show/$1');
-    $routes->post('perbandingan-metode', 'PerbandinganMetodeController::store');
-    $routes->put('perbandingan-metode/(:num)', 'PerbandinganMetodeController::update/$1');
-    $routes->patch('perbandingan-metode/(:num)', 'PerbandinganMetodeController::update/$1');
-    $routes->delete('perbandingan-metode/(:num)', 'PerbandinganMetodeController::delete/$1');
-
     $routes->group('spk', static function ($routes) {
         $routes->post('topsis', 'Spk\\TopsisSpkController::hitung');
         $routes->post('electre', 'Spk\\ElectreSpkController::hitung');
