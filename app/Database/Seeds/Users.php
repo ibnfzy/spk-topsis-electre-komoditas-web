@@ -9,13 +9,15 @@ class Users extends Seeder
 {
     public function run()
     {
-        $now = new RawSql('(NOW())');
+        $builder = $this->db->table('users');
 
-        $this->db->table('users')->insert([
-            'username' => 'admin',
-            'password' => 'admin',
-            'created_at' => $now,
-            'updated_at' => $now
+        $builder->truncate();
+
+        $builder->insert([
+            'username'   => 'admin',
+            'password'   => password_hash('admin', PASSWORD_DEFAULT),
+            'created_at' => new RawSql('NOW()'),
+            'updated_at' => new RawSql('NOW()'),
         ]);
     }
 }
