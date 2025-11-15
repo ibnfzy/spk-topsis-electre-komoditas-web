@@ -233,7 +233,7 @@ class ElectreSpkModel extends Model
         $builder = $db->table($this->table);
 
         $db->transStart();
-        $builder->delete();
+        $builder->truncate();
 
         $timestamp = (new DateTime('now'))->format('Y-m-d H:i:s');
         $batch     = [];
