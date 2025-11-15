@@ -2,25 +2,34 @@
 
 <?= $this->section('content'); ?>
 <section class="space-y-8">
-    <header class="rounded-3xl bg-white/80 backdrop-blur glass-panel border border-slate-200 shadow-floating px-6 py-8 lg:px-10 lg:py-12">
+    <header
+        class="rounded-3xl bg-white/80 backdrop-blur glass-panel border border-slate-200 shadow-floating px-6 py-8 lg:px-10 lg:py-12">
         <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8">
             <div class="space-y-4 max-w-3xl">
-                <a href="<?= base_url('panel/dashboard'); ?>" class="inline-flex items-center text-sm font-medium text-primary hover:text-primaryDark transition">
+                <a href="<?= base_url('panel/dashboard'); ?>"
+                    class="inline-flex items-center text-sm font-medium text-primary hover:text-primaryDark transition">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M12.78 4.22a.75.75 0 010 1.06L8.56 9.5H16a.75.75 0 010 1.5H8.56l4.22 4.22a.75.75 0 11-1.06 1.06l-5.5-5.5a.75.75 0 010-1.06l5.5-5.5a.75.75 0 011.06 0z" clip-rule="evenodd" />
+                        <path fill-rule="evenodd"
+                            d="M12.78 4.22a.75.75 0 010 1.06L8.56 9.5H16a.75.75 0 010 1.5H8.56l4.22 4.22a.75.75 0 11-1.06 1.06l-5.5-5.5a.75.75 0 010-1.06l5.5-5.5a.75.75 0 011.06 0z"
+                            clip-rule="evenodd" />
                     </svg>
                     Kembali ke Dashboard
                 </a>
                 <div>
                     <p class="text-xs uppercase tracking-[0.35em] text-primary/70 font-semibold">Hasil Metode TOPSIS</p>
-                    <h1 class="mt-3 text-3xl lg:text-4xl font-semibold text-slate-900">Ranking Komoditas Berdasarkan Preferensi Ideal</h1>
-                    <p class="mt-3 text-slate-600">Pantau hasil perhitungan TOPSIS, nilai preferensi, dan detail proses untuk memastikan rekomendasi paling optimal.</p>
+                    <h1 class="mt-3 text-3xl lg:text-4xl font-semibold text-slate-900">Ranking Komoditas Berdasarkan Preferensi
+                        Ideal</h1>
+                    <p class="mt-3 text-slate-600">Pantau hasil perhitungan TOPSIS, nilai preferensi, dan detail proses untuk
+                        memastikan rekomendasi paling optimal.</p>
                 </div>
             </div>
             <div class="flex flex-col gap-3 w-full lg:w-auto">
-                <button id="refreshTopsis" type="button" class="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-primaryDark px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-primary/30 hover:shadow-xl transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992V4.356m0 0L18.1 7.27A8.25 8.25 0 105.904 18.75" />
+                <button id="refreshTopsis" type="button"
+                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-primaryDark px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-primary/30 hover:shadow-xl transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                        stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M16.023 9.348h4.992V4.356m0 0L18.1 7.27A8.25 8.25 0 105.904 18.75" />
                     </svg>
                     Hitung Ulang TOPSIS
                 </button>
@@ -49,7 +58,8 @@
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">No</th>
                         <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Komoditas</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Nilai Preferensi</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Nilai
+                            Preferensi</th>
                         <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Posisi</th>
                     </tr>
                 </thead>
@@ -62,27 +72,32 @@
         <h2 class="text-xl font-semibold text-slate-900">Detail Perhitungan</h2>
         <div id="topsisDetails" class="grid gap-5 lg:grid-cols-2">
             <?php
-                $detailSections = [
-                    ['id' => 'normalisasi', 'title' => 'Normalisasi Matriks', 'description' => 'Menampilkan matriks normalisasi untuk setiap kriteria.'],
-                    ['id' => 'pembobotan', 'title' => 'Matriks Ternormalisasi Terbobot', 'description' => 'Nilai matriks setelah dikalikan bobot kriteria.'],
-                    ['id' => 'jarak', 'title' => 'Jarak Terhadap Solusi Ideal', 'description' => 'Jarak ke solusi ideal positif dan negatif untuk tiap komoditas.'],
-                    ['id' => 'skor', 'title' => 'Skor Preferensi Final', 'description' => 'Nilai akhir yang menentukan urutan ranking.'],
-                ];
+            $detailSections = [
+                ['id' => 'normalisasi', 'title' => 'Normalisasi Matriks', 'description' => 'Menampilkan matriks normalisasi untuk setiap kriteria.'],
+                ['id' => 'pembobotan', 'title' => 'Matriks Ternormalisasi Terbobot', 'description' => 'Nilai matriks setelah dikalikan bobot kriteria.'],
+                ['id' => 'jarak', 'title' => 'Jarak Terhadap Solusi Ideal', 'description' => 'Jarak ke solusi ideal positif dan negatif untuk tiap komoditas.'],
+                ['id' => 'skor', 'title' => 'Skor Preferensi Final', 'description' => 'Nilai akhir yang menentukan urutan ranking.'],
+            ];
             ?>
             <?php foreach ($detailSections as $section): ?>
-                <article class="detail-card rounded-3xl border border-slate-200 bg-white/80 shadow-floating overflow-hidden" data-section="<?= esc($section['id']); ?>">
+                <article class="detail-card rounded-3xl border border-slate-200 bg-white/80 shadow-floating overflow-hidden"
+                    data-section="<?= esc($section['id']); ?>">
                     <button class="detail-toggle w-full flex items-center justify-between gap-4 px-6 py-5 text-left">
                         <div>
                             <h3 class="text-lg font-semibold text-slate-800"><?= esc($section['title']); ?></h3>
                             <p class="text-xs text-slate-500 mt-1"><?= esc($section['description']); ?></p>
                         </div>
-                        <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary transition">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <span
+                            class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor" stroke-width="1.5">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                             </svg>
                         </span>
                     </button>
-                    <div class="detail-content hidden border-t border-slate-100 bg-white/70 px-6 py-5 text-sm text-slate-600 space-y-3"></div>
+                    <div
+                        class="detail-content hidden border-t border-slate-100 bg-white/70 px-6 py-5 text-sm text-slate-600 space-y-3">
+                    </div>
                 </article>
             <?php endforeach; ?>
         </div>
@@ -104,12 +119,22 @@
 
         const showAlert = (message, type = 'success') => {
             alertBox.textContent = message;
-            alertBox.className = `mt-6 rounded-2xl border px-4 py-3 text-sm ${type === 'success' ? 'border-emerald-200 bg-emerald-50 text-emerald-600' : 'border-rose-200 bg-rose-50 text-rose-600'}`;
+            alertBox.className =
+                `mt-6 rounded-2xl border px-4 py-3 text-sm ${type === 'success' ? 'border-emerald-200 bg-emerald-50 text-emerald-600' : 'border-rose-200 bg-rose-50 text-rose-600'}`;
             alertBox.classList.remove('hidden');
-            alertBox.animate([
-                { opacity: 0, transform: 'translateY(-4px)' },
-                { opacity: 1, transform: 'translateY(0)' }
-            ], { duration: 280, easing: 'ease-out', fill: 'forwards' });
+            alertBox.animate([{
+                    opacity: 0,
+                    transform: 'translateY(-4px)'
+                },
+                {
+                    opacity: 1,
+                    transform: 'translateY(0)'
+                }
+            ], {
+                duration: 280,
+                easing: 'ease-out',
+                fill: 'forwards'
+            });
         };
 
         const formatNumber = (value) => {
@@ -170,9 +195,10 @@
                 const content = data[section];
 
                 if (!container) return;
-                if (!content || (Array.isArray(content) && !content.length) || (typeof content === 'object' && !Object.keys(content).length)) {
+                if (!content || (Array.isArray(content) && !content.length) || (typeof content === 'object' && !Object
+                        .keys(content).length)) {
                     container.innerHTML = '<p class="text-sm text-slate-400">Belum ada data untuk ditampilkan.</p>';
-                    continue;
+                    return;
                 }
 
                 if (Array.isArray(content)) {
@@ -213,10 +239,19 @@
                 icon.style.transform = 'rotate(0deg)';
             } else {
                 content.classList.remove('hidden');
-                content.animate([
-                    { opacity: 0, transform: 'translateY(-6px)' },
-                    { opacity: 1, transform: 'translateY(0)' }
-                ], { duration: 260, easing: 'ease-out', fill: 'forwards' });
+                content.animate([{
+                        opacity: 0,
+                        transform: 'translateY(-6px)'
+                    },
+                    {
+                        opacity: 1,
+                        transform: 'translateY(0)'
+                    }
+                ], {
+                    duration: 260,
+                    easing: 'ease-out',
+                    fill: 'forwards'
+                });
                 icon.style.transform = 'rotate(45deg)';
             }
         };
@@ -237,12 +272,12 @@
 
         const loadData = () => {
             fetch(dataEndpoint, {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest',
-                },
-            })
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                })
                 .then((res) => {
                     if (!res.ok) throw new Error('Gagal memuat data TOPSIS.');
                     return res.json();
@@ -267,12 +302,12 @@
 
             refreshButton.classList.add('opacity-70', 'pointer-events-none');
             fetch(calculateEndpoint, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest',
-                },
-            })
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                })
                 .then((res) => {
                     if (!res.ok) throw new Error('Gagal memproses perhitungan TOPSIS.');
                     return res.json();
@@ -293,7 +328,10 @@
                 });
         };
 
-        hydrate({ ranking: initialResults ?? [], details: initialDetails ?? {} });
+        hydrate({
+            ranking: initialResults ?? [],
+            details: initialDetails ?? {}
+        });
         loadData();
         if (refreshButton) {
             refreshButton.addEventListener('click', runCalculation);
