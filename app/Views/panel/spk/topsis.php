@@ -97,7 +97,7 @@
         const alertBox = document.getElementById('topsisAlert');
         const refreshButton = document.getElementById('refreshTopsis');
         const detailCards = document.querySelectorAll('.detail-card');
-        const endpoint = '<?= base_url('/spk/topsis'); ?>';
+        const endpoint = '<?= base_url('panel/spk/topsis'); ?>';
         const initialResults = <?= json_encode($results ?? []); ?>;
         const initialDetails = <?= json_encode($details ?? []); ?>;
 
@@ -224,13 +224,22 @@
 
         const fetchData = () => {
             refreshButton.classList.add('opacity-70', 'pointer-events-none');
-            fetch(endpoint, { headers: { 'Accept': 'application/json' } })
+            fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+            })
                 .then((res) => {
                     if (!res.ok) throw new Error('Gagal memuat hasil TOPSIS.');
                     return res.json();
                 })
-                .then((data) => {
-                    hydrate(data);
+                .then((payload) => {
+                    if (payload?.status !== 'success') {
+                        throw new Error(payload?.message || 'Proses TOPSIS gagal dijalankan.');
+                    }
+                    hydrate(payload.data || {});
                     showAlert('Hasil TOPSIS berhasil diperbarui.', 'success');
                 })
                 .catch((error) => {

@@ -64,8 +64,13 @@ $routes->group('panel', ['namespace' => 'App\\Controllers\\Panel', 'filter' => '
     $routes->delete('bobot-kriteria/(:num)', 'BobotKriteriaController::delete/$1');
 
     $routes->group('spk', static function ($routes) {
+        $routes->get('topsis', 'Spk\\ResultsController::topsis');
         $routes->post('topsis', 'Spk\\TopsisSpkController::hitung');
+
+        $routes->get('electre', 'Spk\\ResultsController::electre');
         $routes->post('electre', 'Spk\\ElectreSpkController::hitung');
+
+        $routes->get('bandingkan', 'Spk\\ResultsController::compare');
         $routes->post('bandingkan', 'Spk\\PerbandinganSpkController::bandingkan');
     });
 });

@@ -132,6 +132,44 @@
                     <span class="mt-2 block text-sm text-slate-500 group-hover:text-white/80">Temukan korelasi hasil TOPSIS dan ELECTRE.</span>
                 </button>
             </div>
+
+            <?php
+                $resultLinks = [
+                    [
+                        'label' => 'Hasil TOPSIS',
+                        'description' => 'Lihat ranking preferensi terbaru.',
+                        'href' => base_url('panel/spk/topsis'),
+                        'color' => 'primary',
+                        'icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 15.75 9 9.75l4.5 4.5L21 6" /></svg>',
+                    ],
+                    [
+                        'label' => 'Hasil ELECTRE',
+                        'description' => 'Telaah matriks outranking komoditas.',
+                        'href' => base_url('panel/spk/electre'),
+                        'color' => 'amber',
+                        'icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" /></svg>',
+                    ],
+                    [
+                        'label' => 'Perbandingan SPK',
+                        'description' => 'Analisis korelasi TOPSIS & ELECTRE.',
+                        'href' => base_url('panel/spk/bandingkan'),
+                        'color' => 'emerald',
+                        'icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12m-12 4.5h12m-12 4.5h12M3.75 6.75h.008v.008H3.75V6.75zm0 4.5h.008v.008H3.75v-.008zm0 4.5h.008v.008H3.75v-.008z" /></svg>',
+                    ],
+                ];
+            ?>
+            <div class="mt-6 grid gap-4 md:grid-cols-3">
+                <?php foreach ($resultLinks as $link): ?>
+                    <a href="<?= $link['href']; ?>"
+                       class="group flex flex-col rounded-2xl border border-<?= esc($link['color']); ?>/20 bg-white/80 px-5 py-5 shadow-floating transition hover:-translate-y-1 hover:shadow-xl">
+                        <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-<?= esc($link['color']); ?>/10 text-<?= esc($link['color']); ?> group-hover:bg-<?= esc($link['color']); ?> group-hover:text-white transition">
+                            <?= $link['icon']; ?>
+                        </span>
+                        <span class="mt-4 text-base font-semibold text-slate-900"><?= esc($link['label']); ?></span>
+                        <span class="mt-1 text-sm text-slate-500 group-hover:text-slate-600/90"><?= esc($link['description']); ?></span>
+                    </a>
+                <?php endforeach; ?>
+            </div>
         </div>
 
         <aside class="rounded-3xl bg-white/80 border border-slate-100 shadow-floating p-8 space-y-8">
@@ -170,9 +208,9 @@
         const buttons = document.querySelectorAll('.dashboard-action');
 
         const endpointMap = {
-            topsis: '<?= base_url('/spk/topsis'); ?>',
-            electre: '<?= base_url('/spk/electre'); ?>',
-            bandingkan: '<?= base_url('/spk/bandingkan'); ?>',
+            topsis: '<?= base_url('panel/spk/topsis'); ?>',
+            electre: '<?= base_url('panel/spk/electre'); ?>',
+            bandingkan: '<?= base_url('panel/spk/bandingkan'); ?>',
         };
 
         const showAlert = (message, type = 'success') => {
@@ -185,7 +223,7 @@
             ], { duration: 300, easing: 'ease-out', fill: 'forwards' });
         };
 
-        buttons.forEach(button => {
+        buttons.forEach((button) => {
             button.addEventListener('click', () => {
                 const action = button.dataset.action;
                 const url = endpointMap[action];
@@ -194,13 +232,27 @@
                 button.classList.add('ring-2', 'ring-primary/40');
                 button.setAttribute('disabled', 'disabled');
 
-                fetch(url, { headers: { 'Accept': 'application/json' } })
-                    .then(response => response.json())
-                    .then(() => {
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                })
+                    .then((response) => {
+                        if (!response.ok) {
+                            throw new Error('Permintaan tidak dapat diproses.');
+                        }
+                        return response.json();
+                    })
+                    .then((payload) => {
+                        if (payload?.status !== 'success') {
+                            throw new Error(payload?.message || 'Proses SPK gagal dijalankan.');
+                        }
                         showAlert(`Permintaan ${action.toUpperCase()} berhasil dikirim. Silakan cek hasilnya.`, 'success');
                     })
-                    .catch(() => {
-                        showAlert('Tidak dapat terhubung ke server. Coba lagi nanti.', 'error');
+                    .catch((error) => {
+                        showAlert(error.message || 'Terjadi kesalahan saat mengirim permintaan.', 'error');
                     })
                     .finally(() => {
                         button.classList.remove('ring-2', 'ring-primary/40');

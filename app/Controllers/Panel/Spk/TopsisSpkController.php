@@ -3,6 +3,7 @@
 namespace App\Controllers\Panel\Spk;
 
 use App\Controllers\BaseController;
+use App\Libraries\SpkResultPresenter;
 use App\Models\TopsisSpkModel;
 use CodeIgniter\HTTP\ResponseInterface;
 use Throwable;
@@ -29,27 +30,11 @@ class TopsisSpkController extends BaseController
 
             $model->simpanHasil($preferences);
 
-            $alternativeMap = [];
-            foreach ($data['alternatives'] as $alternative) {
-                $alternativeMap[(int) $alternative['id']] = $alternative;
-            }
-
-            $ranking = array_map(static function (array $row) use ($alternativeMap) {
-                $alternative = $alternativeMap[$row['komoditas_id']] ?? [];
-                $row['nama_komoditas'] = $alternative['nama_komoditas'] ?? null;
-                $row['kategori']       = $alternative['kategori'] ?? null;
-
-                return $row;
-            }, $preferences);
+            $presentation = SpkResultPresenter::formatTopsis($data, $preferences, $normalized, $weighted);
 
             return $this->response->setJSON([
                 'status' => 'success',
-                'data'   => [
-                    'normalisasi' => $normalized,
-                    'pembobotan'  => $weighted,
-                    'solusi'      => $ideal,
-                    'ranking'     => $ranking,
-                ],
+                'data'   => $presentation,
             ]);
         } catch (Throwable $exception) {
             return $this->response->setStatusCode(500)->setJSON([
