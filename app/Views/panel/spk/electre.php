@@ -18,7 +18,7 @@
                 </div>
             </div>
             <div class="flex flex-col gap-3 w-full lg:w-auto">
-                <button id="refreshElectre" class="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 px-5 py-3 text-sm font-semibold text-slate-900 shadow-lg shadow-amber-200/60 hover:shadow-xl transition">
+                <button id="refreshElectre" type="button" class="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 px-5 py-3 text-sm font-semibold text-slate-900 shadow-lg shadow-amber-200/60 hover:shadow-xl transition">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992V4.356m0 0L18.1 7.27A8.25 8.25 0 105.904 18.75" />
                     </svg>
@@ -97,7 +97,8 @@
         const alertBox = document.getElementById('electreAlert');
         const refreshButton = document.getElementById('refreshElectre');
         const detailCards = document.querySelectorAll('#electreDetails .detail-card');
-        const endpoint = '<?= base_url('panel/spk/electre'); ?>';
+        const dataEndpoint = '<?= base_url('panel/spk/electre/data'); ?>';
+        const calculateEndpoint = '<?= base_url('panel/spk/electre/hitung'); ?>';
         const initialResults = <?= json_encode($results ?? []); ?>;
         const initialDetails = <?= json_encode($details ?? []); ?>;
 
@@ -114,6 +115,16 @@
         const formatNumber = (value) => {
             if (typeof value !== 'number') return value ?? '-';
             return value.toFixed(4);
+        };
+
+        const getOutrankingValue = (row) => {
+            const rawValue = row?.nilai_outranking ?? row?.nilai_akhir ?? row?.nilai;
+            if (typeof rawValue === 'number') {
+                return rawValue;
+            }
+
+            const parsed = Number.parseFloat(rawValue);
+            return Number.isFinite(parsed) ? parsed : rawValue;
         };
 
         const renderTable = (rows = []) => {
@@ -140,11 +151,13 @@
             rows.forEach((row, index) => {
                 const tr = document.createElement('tr');
                 tr.className = 'hover:bg-amber-50 transition';
+                const outranking = getOutrankingValue(row);
+                const position = row.posisi ?? row.ranking ?? (index + 1);
                 tr.innerHTML = `
                     <td class="px-6 py-4 text-sm text-slate-500">${index + 1}</td>
                     <td class="px-6 py-4 text-sm font-semibold text-slate-700">${row.nama_komoditas ?? '-'}</td>
-                    <td class="px-6 py-4 text-sm text-slate-500">${formatNumber(row.nilai_outranking ?? row.nilai)}</td>
-                    <td class="px-6 py-4 text-sm text-slate-500">${row.posisi ?? index + 1}</td>
+                    <td class="px-6 py-4 text-sm text-slate-500">${formatNumber(outranking)}</td>
+                    <td class="px-6 py-4 text-sm text-slate-500">${position}</td>
                 `;
                 tableBody.appendChild(tr);
             });
@@ -222,9 +235,38 @@
             renderDetails(data?.details || {});
         };
 
-        const fetchData = () => {
+        const loadData = () => {
+            fetch(dataEndpoint, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+            })
+                .then((res) => {
+                    if (!res.ok) throw new Error('Gagal memuat data ELECTRE.');
+                    return res.json();
+                })
+                .then((payload) => {
+                    if (payload?.status !== 'success') {
+                        throw new Error(payload?.message || 'Tidak dapat menampilkan data ELECTRE.');
+                    }
+
+                    hydrate(payload.data || {});
+                })
+                .catch((error) => {
+                    console.error(error);
+                    showAlert(error.message || 'Terjadi kesalahan saat memuat data.', 'error');
+                });
+        };
+
+        const runCalculation = () => {
+            if (!refreshButton) {
+                return;
+            }
+
             refreshButton.classList.add('opacity-70', 'pointer-events-none');
-            fetch(endpoint, {
+            fetch(calculateEndpoint, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -232,15 +274,16 @@
                 },
             })
                 .then((res) => {
-                    if (!res.ok) throw new Error('Gagal memuat hasil ELECTRE.');
+                    if (!res.ok) throw new Error('Gagal memproses perhitungan ELECTRE.');
                     return res.json();
                 })
                 .then((payload) => {
                     if (payload?.status !== 'success') {
                         throw new Error(payload?.message || 'Proses ELECTRE gagal dijalankan.');
                     }
+
                     hydrate(payload.data || {});
-                    showAlert('Hasil ELECTRE berhasil diperbarui.', 'success');
+                    showAlert(payload?.message || 'Hasil ELECTRE berhasil diperbarui.', 'success');
                 })
                 .catch((error) => {
                     showAlert(error.message || 'Terjadi kesalahan saat mengambil data.', 'error');
@@ -251,7 +294,10 @@
         };
 
         hydrate({ ranking: initialResults ?? [], details: initialDetails ?? {} });
-        refreshButton.addEventListener('click', fetchData);
+        loadData();
+        if (refreshButton) {
+            refreshButton.addEventListener('click', runCalculation);
+        }
     });
 </script>
 <?= $this->endSection(); ?>
