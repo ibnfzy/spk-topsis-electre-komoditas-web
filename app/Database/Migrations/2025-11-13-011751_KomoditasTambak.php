@@ -11,7 +11,7 @@ class KomoditasTambak extends Migration
         $this->forge->addField([
             'id'                => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
             'nama_komoditas'    => ['type' => 'VARCHAR', 'constraint' => 100],
-            'kategori'          => ['type' => 'ENUM("ikan","krustasea","rumput_laut")', 'default' => 'ikan'],
+            'kategori'          => ['type' => 'ENUM("ikan","udang")', 'default' => 'ikan'],
             'deskripsi'         => ['type' => 'TEXT', 'null' => true],
             'created_at'        => ['type' => 'DATETIME', 'null' => true],
             'updated_at'        => ['type' => 'DATETIME', 'null' => true],
