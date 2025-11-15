@@ -12,23 +12,30 @@ class KomoditasTambak extends Seeder
 
         $data = [
             [
-                'nama_komoditas' => 'Bandeng',
+                'nama_komoditas' => 'Ikan Bandeng',
                 'kategori'      => 'ikan',
-                'deskripsi'     => 'Komoditas ikan bandeng yang populer untuk budidaya tambak karena adaptif dan mudah dipelihara.',
+                'deskripsi'     => 'Ikan bandeng yang adaptif terhadap berbagai kondisi tambak dan diminati untuk konsumsi.',
                 'created_at'    => $now,
                 'updated_at'    => $now,
             ],
             [
-                'nama_komoditas' => 'Udang Vannamei',
-                'kategori'      => 'krustasea',
-                'deskripsi'     => 'Udang vannamei dengan permintaan pasar tinggi dan pertumbuhan cepat.',
+                'nama_komoditas' => 'Ikan Nila',
+                'kategori'      => 'ikan',
+                'deskripsi'     => 'Ikan nila air payau dengan pertumbuhan cepat dan permintaan pasar stabil.',
                 'created_at'    => $now,
                 'updated_at'    => $now,
             ],
             [
-                'nama_komoditas' => 'Rumput Laut Gracilaria',
-                'kategori'      => 'rumput_laut',
-                'deskripsi'     => 'Rumput laut gracilaria untuk produksi agar dengan toleransi salinitas yang baik.',
+                'nama_komoditas' => 'Udang Vaname',
+                'kategori'      => 'udang',
+                'deskripsi'     => 'Udang vaname unggulan dengan produktivitas tinggi dan siklus budidaya singkat.',
+                'created_at'    => $now,
+                'updated_at'    => $now,
+            ],
+            [
+                'nama_komoditas' => 'Udang Windu',
+                'kategori'      => 'udang',
+                'deskripsi'     => 'Udang windu premium dengan nilai jual tinggi dan kebutuhan manajemen ketat.',
                 'created_at'    => $now,
                 'updated_at'    => $now,
             ],

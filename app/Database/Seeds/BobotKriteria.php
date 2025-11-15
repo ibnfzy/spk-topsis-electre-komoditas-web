@@ -16,11 +16,10 @@ class BobotKriteria extends Seeder
         }
 
         $bobotData = [
-            ['kode' => 'C1', 'bobot' => 0.25],
-            ['kode' => 'C2', 'bobot' => 0.20],
+            ['kode' => 'C1', 'bobot' => 0.35],
+            ['kode' => 'C2', 'bobot' => 0.30],
             ['kode' => 'C3', 'bobot' => 0.20],
-            ['kode' => 'C4', 'bobot' => 0.20],
-            ['kode' => 'C5', 'bobot' => 0.15],
+            ['kode' => 'C4', 'bobot' => 0.15],
         ];
 
         $batch = [];

@@ -18,9 +18,10 @@ class HasilElectre extends Seeder
         $timestamp = date('Y-m-d H:i:s');
 
         $hasil = [
-            ['nama' => 'Udang Vannamei', 'nilai_akhir' => 1.000000, 'ranking' => 1],
-            ['nama' => 'Bandeng', 'nilai_akhir' => 0.500000, 'ranking' => 2],
-            ['nama' => 'Rumput Laut Gracilaria', 'nilai_akhir' => 0.000000, 'ranking' => 3],
+            ['nama' => 'Udang Vaname', 'nilai_akhir' => 1.000000, 'ranking' => 1],
+            ['nama' => 'Ikan Bandeng', 'nilai_akhir' => 0.670000, 'ranking' => 2],
+            ['nama' => 'Ikan Nila', 'nilai_akhir' => 0.330000, 'ranking' => 3],
+            ['nama' => 'Udang Windu', 'nilai_akhir' => 0.000000, 'ranking' => 4],
         ];
 
         $batch = [];
