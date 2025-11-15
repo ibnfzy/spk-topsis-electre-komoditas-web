@@ -65,10 +65,14 @@ $routes->group('panel', ['namespace' => 'App\\Controllers\\Panel', 'filter' => '
 
     $routes->group('spk', static function ($routes) {
         $routes->get('topsis', 'Spk\\ResultsController::topsis');
+        $routes->get('topsis/data', 'Spk\\ResultsController::topsisData');
         $routes->post('topsis', 'Spk\\TopsisSpkController::hitung');
+        $routes->post('topsis/hitung', 'Spk\\TopsisSpkController::hitung');
 
         $routes->get('electre', 'Spk\\ResultsController::electre');
+        $routes->get('electre/data', 'Spk\\ResultsController::electreData');
         $routes->post('electre', 'Spk\\ElectreSpkController::hitung');
+        $routes->post('electre/hitung', 'Spk\\ElectreSpkController::hitung');
 
         $routes->get('bandingkan', 'Spk\\ResultsController::compare');
         $routes->post('bandingkan', 'Spk\\PerbandinganSpkController::bandingkan');
