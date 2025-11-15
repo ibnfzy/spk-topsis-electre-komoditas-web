@@ -97,7 +97,7 @@
         const alertBox = document.getElementById('electreAlert');
         const refreshButton = document.getElementById('refreshElectre');
         const detailCards = document.querySelectorAll('#electreDetails .detail-card');
-        const endpoint = '<?= base_url('/spk/electre'); ?>';
+        const endpoint = '<?= base_url('panel/spk/electre'); ?>';
         const initialResults = <?= json_encode($results ?? []); ?>;
         const initialDetails = <?= json_encode($details ?? []); ?>;
 
@@ -224,13 +224,22 @@
 
         const fetchData = () => {
             refreshButton.classList.add('opacity-70', 'pointer-events-none');
-            fetch(endpoint, { headers: { 'Accept': 'application/json' } })
+            fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+            })
                 .then((res) => {
                     if (!res.ok) throw new Error('Gagal memuat hasil ELECTRE.');
                     return res.json();
                 })
-                .then((data) => {
-                    hydrate(data);
+                .then((payload) => {
+                    if (payload?.status !== 'success') {
+                        throw new Error(payload?.message || 'Proses ELECTRE gagal dijalankan.');
+                    }
+                    hydrate(payload.data || {});
                     showAlert('Hasil ELECTRE berhasil diperbarui.', 'success');
                 })
                 .catch((error) => {

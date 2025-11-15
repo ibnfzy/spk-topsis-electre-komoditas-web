@@ -70,7 +70,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const endpoint = '<?= base_url('/spk/bandingkan'); ?>';
+        const endpoint = '<?= base_url('panel/spk/bandingkan'); ?>';
         const compareButton = document.getElementById('compareNow');
         const alertBox = document.getElementById('compareAlert');
         const rhoValue = document.getElementById('rhoValue');
@@ -168,13 +168,22 @@
 
         const fetchComparison = () => {
             compareButton.classList.add('opacity-70', 'pointer-events-none');
-            fetch(endpoint, { headers: { 'Accept': 'application/json' } })
+            fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+            })
                 .then((res) => {
                     if (!res.ok) throw new Error('Gagal memuat perbandingan.');
                     return res.json();
                 })
-                .then((data) => {
-                    hydrate(data);
+                .then((payload) => {
+                    if (payload?.status !== 'success') {
+                        throw new Error(payload?.message || 'Perbandingan gagal dijalankan.');
+                    }
+                    hydrate(payload.data || {});
                     showAlert('Perbandingan metode berhasil diperbarui.', 'success');
                 })
                 .catch((error) => {

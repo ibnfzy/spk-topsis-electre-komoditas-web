@@ -3,6 +3,8 @@
 namespace App\Controllers\Panel\Spk;
 
 use App\Controllers\BaseController;
+use App\Libraries\SpkResultPresenter;
+use App\Models\KomoditasTambakModel;
 use App\Models\PerbandinganSpkModel;
 use CodeIgniter\HTTP\ResponseInterface;
 use Throwable;
@@ -27,13 +29,17 @@ class PerbandinganSpkController extends BaseController
 
             $model->simpan($hasil);
 
+            $komoditasModel = new KomoditasTambakModel();
+            $alternatives   = [];
+            foreach ($komoditasModel->findAll() as $alternative) {
+                $alternatives[(int) ($alternative['id'] ?? 0)] = $alternative;
+            }
+
+            $presentation = SpkResultPresenter::formatComparison($topsis, $electre, $hasil, $alternatives);
+
             return $this->response->setJSON([
                 'status' => 'success',
-                'data'   => [
-                    'rho'           => $hasil['rho'],
-                    'interpretasi'  => $hasil['keterangan'],
-                    'detail'        => $hasil['details'],
-                ],
+                'data'   => $presentation,
             ]);
         } catch (Throwable $exception) {
             return $this->response->setStatusCode(500)->setJSON([

@@ -32,6 +32,24 @@
             'link'  => base_url('panel/nilai-kriteria'),
             'match' => 'panel/nilai-kriteria',
         ],
+        [
+            'label' => 'Hasil TOPSIS',
+            'icon'  => '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 17.25l3.75-3.75 3 3 6-6" /></svg>',
+            'link'  => base_url('panel/spk/topsis'),
+            'match' => 'panel/spk/topsis',
+        ],
+        [
+            'label' => 'Hasil ELECTRE',
+            'icon'  => '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>',
+            'link'  => base_url('panel/spk/electre'),
+            'match' => 'panel/spk/electre',
+        ],
+        [
+            'label' => 'Perbandingan SPK',
+            'icon'  => '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 4.5v15m0 0h15M4.5 12h10.5m0 0L12 9m3 3l-3 3" /></svg>',
+            'link'  => base_url('panel/spk/bandingkan'),
+            'match' => 'panel/spk/bandingkan',
+        ],
     ];
 ?>
 <aside class="hidden lg:flex lg:flex-col lg:w-64 xl:w-72 bg-white/90 glass-panel border-r border-slate-200/80 shadow-lg shadow-slate-200/40">
