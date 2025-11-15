@@ -18,9 +18,10 @@ class HasilTopsis extends Seeder
         $timestamp = date('Y-m-d H:i:s');
 
         $hasil = [
-            ['nama' => 'Rumput Laut Gracilaria', 'nilai_pref' => 0.709877, 'ranking' => 1],
-            ['nama' => 'Bandeng', 'nilai_pref' => 0.471522, 'ranking' => 2],
-            ['nama' => 'Udang Vannamei', 'nilai_pref' => 0.290123, 'ranking' => 3],
+            ['nama' => 'Udang Vaname', 'nilai_pref' => 0.672345, 'ranking' => 1],
+            ['nama' => 'Ikan Bandeng', 'nilai_pref' => 0.615432, 'ranking' => 2],
+            ['nama' => 'Ikan Nila', 'nilai_pref' => 0.544321, 'ranking' => 3],
+            ['nama' => 'Udang Windu', 'nilai_pref' => 0.421987, 'ranking' => 4],
         ];
 
         $batch = [];
