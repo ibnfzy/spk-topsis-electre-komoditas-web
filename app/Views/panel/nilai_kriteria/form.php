@@ -12,15 +12,28 @@
                     Kembali ke Dashboard
                 </a>
                 <div>
-                    <p class="text-xs uppercase tracking-[0.35em] text-primary/70 font-semibold">Input Nilai Kriteria</p>
-                    <h1 class="mt-3 text-3xl lg:text-4xl font-semibold text-slate-900">Matrix Penilaian Komoditas</h1>
-                    <p class="mt-3 text-slate-600">Masukkan nilai performa setiap komoditas untuk seluruh kriteria penilaian dalam satu tampilan tabel yang mudah diedit.</p>
+                    <p class="text-xs uppercase tracking-[0.35em] text-primary/70 font-semibold">
+                        <?= isset($isEditing) && $isEditing ? 'Edit Matrix Nilai' : 'Input Nilai Kriteria'; ?>
+                    </p>
+                    <h1 class="mt-3 text-3xl lg:text-4xl font-semibold text-slate-900">
+                        <?= esc($pageTitle ?? 'Matrix Penilaian Komoditas'); ?>
+                    </h1>
+                    <p class="mt-3 text-slate-600">
+                        <?= isset($isEditing) && $isEditing
+                            ? 'Perbarui seluruh nilai kriteria dalam satu tampilan matrix.'
+                            : 'Masukkan nilai performa setiap komoditas untuk seluruh kriteria penilaian dalam satu tampilan tabel yang mudah diedit.';
+                        ?>
+                    </p>
                 </div>
             </div>
             <div class="rounded-2xl bg-primary text-white px-6 py-4 shadow-floating space-y-1">
                 <p class="text-xs uppercase tracking-[0.3em] text-white/80">Status</p>
-                <p class="text-lg font-semibold">Draft Penilaian</p>
-                <p class="text-sm text-white/70">Pastikan seluruh nilai terisi sebelum menyimpan.</p>
+                <p class="text-lg font-semibold">
+                    <?= isset($isEditing) && $isEditing ? 'Mode Edit Matrix' : 'Draft Penilaian'; ?>
+                </p>
+                <p class="text-sm text-white/70">
+                    <?= isset($isEditing) && $isEditing ? 'Periksa kembali perubahan sebelum menyimpan.' : 'Pastikan seluruh nilai terisi sebelum menyimpan.'; ?>
+                </p>
             </div>
         </div>
         <div id="matrixAlert" class="mt-6 hidden rounded-2xl border px-4 py-3 text-sm"></div>
@@ -103,7 +116,7 @@
         <div class="flex flex-wrap gap-3">
             <a href="<?= base_url('panel/nilai-kriteria'); ?>" class="inline-flex items-center justify-center px-5 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 transition">Batal</a>
             <button id="saveMatrix" class="inline-flex items-center justify-center px-5 py-2.5 rounded-xl bg-gradient-to-r from-primary to-primaryDark text-white font-semibold shadow-lg shadow-primary/30 hover:shadow-xl hover:-translate-y-0.5 transition">
-                Simpan Nilai
+                <?= isset($isEditing) && $isEditing ? 'Perbarui Nilai' : 'Simpan Nilai'; ?>
             </button>
         </div>
     </div>
@@ -116,7 +129,7 @@
         const saveButton = document.getElementById('saveMatrix');
         const alertBox = document.getElementById('matrixAlert');
         const inputs = Array.from(document.querySelectorAll('input[data-komoditas][data-kriteria]'));
-        const endpoint = '<?= base_url('/nilai-kriteria/store'); ?>';
+        const endpoint = '<?= esc($matrixEndpoint ?? base_url('panel/nilai-kriteria/matrix')); ?>';
 
         const showAlert = (message, type = 'success') => {
             alertBox.textContent = message;

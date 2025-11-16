@@ -5,7 +5,6 @@ namespace App\Controllers\Panel;
 use App\Models\KomoditasTambakModel;
 use App\Models\KriteriaModel;
 use App\Models\NilaiKriteriaModel;
-use CodeIgniter\Exceptions\PageNotFoundException;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class NilaiKriteriaController extends BaseResourceController
@@ -24,15 +23,20 @@ class NilaiKriteriaController extends BaseResourceController
                 ->select('nilai_kriteria.*, komoditas_tambak.nama_komoditas, kriteria.nama_kriteria')
                 ->join('komoditas_tambak', 'komoditas_tambak.id = nilai_kriteria.komoditas_id', 'left')
                 ->join('kriteria', 'kriteria.id = nilai_kriteria.kriteria_id', 'left')
+                ->orderBy('komoditas_tambak.nama_komoditas', 'ASC')
+                ->orderBy('kriteria.nama_kriteria', 'ASC')
                 ->findAll();
 
             return $this->respondSuccess(['data' => $records]);
         }
 
+        $hasValues = $this->model->select('id')->limit(1)->first() !== null;
+
         return view('panel/nilai_kriteria/index', [
             'title'       => 'Penilaian Komoditas',
             'pageTitle'   => 'Nilai Kriteria',
             'description' => 'Kelola nilai penilaian setiap komoditas terhadap masing-masing kriteria.',
+            'hasValues'   => $hasValues,
         ]);
     }
 
@@ -87,20 +91,82 @@ class NilaiKriteriaController extends BaseResourceController
 
     public function new(): string
     {
-        return view('panel/nilai_kriteria/form', $this->formPayload('Tambah Nilai Kriteria', 'Tambah Nilai', base_url('panel/nilai-kriteria'), 'POST'));
+        return view('panel/nilai_kriteria/form', $this->formPayload(
+            'Tambah Nilai Kriteria',
+            'Matrix Penilaian Komoditas',
+            false,
+            []
+        ));
     }
 
-    public function edit(int $id): string
+    public function editMatrix(): string
     {
-        $record = $this->model->find($id);
-        if (!$record) {
-            throw PageNotFoundException::forPageNotFound('Nilai kriteria tidak ditemukan.');
+        $matrix = $this->buildMatrix();
+        if (empty($matrix)) {
+            return redirect()->to(base_url('panel/nilai-kriteria/tambah'));
         }
 
-        return view('panel/nilai_kriteria/form', $this->formPayload('Edit Nilai Kriteria', 'Ubah Nilai', base_url('panel/nilai-kriteria/' . $id), 'PUT', $record));
+        return view('panel/nilai_kriteria/form', $this->formPayload(
+            'Edit Nilai Kriteria',
+            'Perbarui Matrix Penilaian',
+            true,
+            $matrix
+        ));
     }
 
-    private function formPayload(string $title, string $pageTitle, string $action, string $method, ?array $record = null): array
+    public function saveMatrix(): ResponseInterface
+    {
+        $payload = $this->getRequestInput();
+        $nilai   = $payload['nilai'] ?? [];
+
+        if (!is_array($nilai)) {
+            return $this->respondValidationErrors(['nilai' => 'Format matrix tidak valid.']);
+        }
+
+        $db = \Config\Database::connect();
+        $db->transStart();
+        $db->table($this->model->getTable())->truncate();
+
+        foreach ($nilai as $komoditasId => $kriteriaValues) {
+            if (!is_array($kriteriaValues)) {
+                continue;
+            }
+
+            foreach ($kriteriaValues as $kriteriaId => $value) {
+                if ($value === null || $value === '') {
+                    continue;
+                }
+
+                if (!is_numeric($value)) {
+                    $db->transRollback();
+                    return $this->respondValidationErrors(['nilai' => 'Nilai harus berupa angka.']);
+                }
+
+                $this->model->insert([
+                    'komoditas_id' => (int) $komoditasId,
+                    'kriteria_id'  => (int) $kriteriaId,
+                    'nilai'        => (float) $value,
+                ], false);
+            }
+        }
+
+        $db->transComplete();
+
+        if ($db->transStatus() === false) {
+            return $this->respondServerError('Gagal menyimpan matrix nilai.');
+        }
+
+        return $this->respondSuccess(['message' => 'Matrix nilai kriteria berhasil disimpan.']);
+    }
+
+    public function clearAll(): ResponseInterface
+    {
+        \Config\Database::connect()->table($this->model->getTable())->truncate();
+
+        return $this->respondSuccess(['message' => 'Seluruh nilai kriteria berhasil dikosongkan.']);
+    }
+
+    private function formPayload(string $title, string $pageTitle, bool $isEditing, array $nilaiMatrix): array
     {
         $komoditasModel = new KomoditasTambakModel();
         $kriteriaModel  = new KriteriaModel();
@@ -108,11 +174,23 @@ class NilaiKriteriaController extends BaseResourceController
         return [
             'title'             => $title,
             'pageTitle'         => $pageTitle,
-            'formAction'        => $action,
-            'submitMethod'      => $method,
-            'record'            => $record,
+            'isEditing'         => $isEditing,
+            'matrixEndpoint'    => base_url('panel/nilai-kriteria/matrix'),
+            'nilaiMatrix'       => $nilaiMatrix,
             'komoditasOptions'  => $komoditasModel->select('id, nama_komoditas')->orderBy('nama_komoditas')->findAll(),
             'kriteriaOptions'   => $kriteriaModel->select('id, nama_kriteria')->orderBy('nama_kriteria')->findAll(),
         ];
+    }
+
+    private function buildMatrix(): array
+    {
+        $records = $this->model->select('komoditas_id, kriteria_id, nilai')->findAll();
+        $matrix  = [];
+
+        foreach ($records as $record) {
+            $matrix[$record['komoditas_id']][$record['kriteria_id']] = $record['nilai'];
+        }
+
+        return $matrix;
     }
 }

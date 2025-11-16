@@ -8,12 +8,32 @@
                 <h1 class="text-2xl lg:text-3xl font-semibold text-slate-900"><?= esc($pageTitle); ?></h1>
                 <p class="mt-2 text-slate-500 max-w-2xl"><?= esc($description); ?></p>
             </div>
-            <a href="<?= base_url('panel/nilai-kriteria/tambah'); ?>" class="inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-gradient-to-r from-primary to-primaryDark text-white font-medium shadow-lg shadow-primary/30 hover:shadow-xl hover:-translate-y-0.5 transition-all">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                </svg>
-                Tambah Nilai
-            </a>
+            <div class="flex flex-col gap-3 lg:flex-row lg:items-center">
+                <a
+                    id="manageMatrixButton"
+                    data-has-values="<?= isset($hasValues) && $hasValues ? '1' : '0'; ?>"
+                    data-add-url="<?= base_url('panel/nilai-kriteria/tambah'); ?>"
+                    data-edit-url="<?= base_url('panel/nilai-kriteria/edit'); ?>"
+                    href="<?= base_url((isset($hasValues) && $hasValues) ? 'panel/nilai-kriteria/edit' : 'panel/nilai-kriteria/tambah'); ?>"
+                    class="inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-gradient-to-r from-primary to-primaryDark text-white font-medium shadow-lg shadow-primary/30 hover:shadow-xl hover:-translate-y-0.5 transition-all"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                    </svg>
+                    <span id="manageMatrixText"><?= (isset($hasValues) && $hasValues) ? 'Edit Nilai' : 'Tambah Nilai'; ?></span>
+                </a>
+                <button
+                    id="clearMatrixButton"
+                    data-endpoint="<?= base_url('panel/nilai-kriteria/clear'); ?>"
+                    class="inline-flex items-center justify-center px-4 py-2.5 rounded-xl border border-rose-200 bg-rose-50 text-rose-500 font-medium shadow-floating hover:bg-rose-100 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    <?= (isset($hasValues) && $hasValues) ? '' : 'disabled'; ?>
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    Kosongkan Nilai
+                </button>
+            </div>
         </div>
     </div>
 
@@ -39,7 +59,6 @@
                         <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Komoditas</th>
                         <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Kriteria</th>
                         <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Nilai</th>
-                        <th class="px-6 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">Aksi</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody" class="divide-y divide-slate-100 bg-white/60"></tbody>
@@ -73,6 +92,10 @@
         let dataset = [];
         let filtered = [];
         let currentPage = 1;
+        const manageButton = document.getElementById('manageMatrixButton');
+        const manageText = document.getElementById('manageMatrixText');
+        const clearButton = document.getElementById('clearMatrixButton');
+        const clearEndpoint = clearButton?.dataset.endpoint;
 
         const toast = (message, type = 'success') => {
             const wrapper = document.createElement('div');
@@ -94,12 +117,27 @@
             }, 2200);
         };
 
+        const setManageButtonMode = (hasData) => {
+            if (!manageButton || !manageText) return;
+            const addUrl = manageButton.dataset.addUrl;
+            const editUrl = manageButton.dataset.editUrl;
+            manageButton.dataset.hasValues = hasData ? '1' : '0';
+            manageButton.setAttribute('href', hasData ? editUrl : addUrl);
+            manageText.textContent = hasData ? 'Edit Nilai' : 'Tambah Nilai';
+        };
+
+        const toggleClearButton = (hasData) => {
+            if (!clearButton) return;
+            clearButton.disabled = !hasData;
+        };
+
         const renderRows = () => {
             tableBody.innerHTML = '';
+            const hasDataset = dataset.length > 0;
             if (!filtered.length) {
                 tableBody.innerHTML = `
                     <tr>
-                        <td colspan="5" class="px-6 py-10 text-center text-slate-400">
+                        <td colspan="4" class="px-6 py-10 text-center text-slate-400">
                             <div class="flex flex-col items-center gap-3">
                                 <span class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -112,7 +150,9 @@
                         </td>
                     </tr>
                 `;
-                tableMeta.textContent = 'Data tidak ditemukan';
+                tableMeta.textContent = hasDataset ? 'Data tidak ditemukan' : 'Belum ada data nilai';
+                setManageButtonMode(hasDataset);
+                toggleClearButton(hasDataset);
                 return;
             }
 
@@ -127,12 +167,6 @@
                     <td class="px-6 py-4 text-sm font-medium text-slate-700">${item.nama_komoditas ?? '-'}</td>
                     <td class="px-6 py-4 text-sm text-slate-500">${item.nama_kriteria ?? '-'}</td>
                     <td class="px-6 py-4 text-sm text-slate-500">${item.nilai ?? '-'}</td>
-                    <td class="px-6 py-4">
-                        <div class="flex justify-end gap-2">
-                            <a href="<?= base_url('panel/nilai-kriteria'); ?>/${item.id}/edit" class="inline-flex items-center px-3 py-1.5 rounded-lg border border-primary/30 text-primary bg-primary/10 hover:bg-primary/20 transition-all text-sm font-medium">Edit</a>
-                            <button data-id="${item.id}" class="deleteBtn inline-flex items-center px-3 py-1.5 rounded-lg border border-rose-100 text-rose-500 bg-rose-50 hover:bg-rose-100 transition-all text-sm font-medium">Hapus</button>
-                        </div>
-                    </td>
                 `;
                 tableBody.appendChild(row);
             });
@@ -142,7 +176,8 @@
             prevPage.disabled = currentPage === 1;
             nextPage.disabled = currentPage === totalPages;
             renderPagination(totalPages);
-            attachDeleteEvents();
+            setManageButtonMode(dataset.length > 0);
+            toggleClearButton(dataset.length > 0);
         };
 
         const renderPagination = (totalPages) => {
@@ -170,32 +205,10 @@
             renderRows();
         };
 
-        const attachDeleteEvents = () => {
-            document.querySelectorAll('.deleteBtn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const id = btn.getAttribute('data-id');
-                    if (!id) return;
-                    if (!confirm('Yakin ingin menghapus nilai ini?')) return;
-
-                    fetch(`<?= base_url('panel/nilai-kriteria'); ?>/${id}`, {
-                        method: 'DELETE',
-                        headers: { 'Accept': 'application/json' },
-                    })
-                        .then(res => res.json())
-                        .then(() => {
-                            toast('Nilai berhasil dihapus');
-                            dataset = dataset.filter(item => String(item.id) !== String(id));
-                            applyFilter();
-                        })
-                        .catch(() => toast('Terjadi kesalahan saat menghapus', 'error'));
-                });
-            });
-        };
-
         const fetchData = () => {
             tableBody.innerHTML = `
                 <tr>
-                    <td colspan="5" class="px-6 py-10 text-center">
+                    <td colspan="4" class="px-6 py-10 text-center">
                         <div class="flex flex-col items-center gap-3 text-slate-400 animate-pulse">
                             <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-slate-100">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -218,13 +231,38 @@
                 .catch(() => {
                     tableBody.innerHTML = `
                         <tr>
-                            <td colspan="5" class="px-6 py-10 text-center text-rose-500">
+                            <td colspan="4" class="px-6 py-10 text-center text-rose-500">
                                 Gagal memuat data. Silakan coba lagi.
                             </td>
                         </tr>`;
                     tableMeta.textContent = 'Gagal memuat data';
                 });
         };
+
+        clearButton?.addEventListener('click', () => {
+            if (!clearEndpoint || clearButton.disabled) return;
+            if (!confirm('Semua nilai akan dihapus. Lanjutkan?')) return;
+
+            clearButton.classList.add('opacity-60', 'pointer-events-none');
+
+            fetch(clearEndpoint, {
+                method: 'POST',
+                headers: { 'Accept': 'application/json' },
+            })
+                .then(res => res.json())
+                .then(() => {
+                    toast('Seluruh nilai dikosongkan');
+                    dataset = [];
+                    filtered = [];
+                    currentPage = 1;
+                    renderRows();
+                    tableMeta.textContent = 'Data nilai kosong';
+                })
+                .catch(() => toast('Gagal mengosongkan nilai', 'error'))
+                .finally(() => {
+                    clearButton.classList.remove('opacity-60', 'pointer-events-none');
+                });
+        });
 
         prevPage.addEventListener('click', () => {
             if (currentPage > 1) {

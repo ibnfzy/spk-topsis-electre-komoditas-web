@@ -56,4 +56,14 @@ abstract class BaseResourceController extends BaseController
             ->setStatusCode($status)
             ->setJSON($payload);
     }
+
+    protected function respondServerError(string $message): ResponseInterface
+    {
+        return $this->response
+            ->setStatusCode(ResponseInterface::HTTP_INTERNAL_SERVER_ERROR)
+            ->setJSON([
+                'status'  => 'error',
+                'message' => $message,
+            ]);
+    }
 }
