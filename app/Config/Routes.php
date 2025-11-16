@@ -46,9 +46,11 @@ $routes->group('panel', ['namespace' => 'App\\Controllers\\Panel', 'filter' => '
     // Nilai Kriteria CRUD
     $routes->get('nilai-kriteria', 'NilaiKriteriaController::index');
     $routes->get('nilai-kriteria/tambah', 'NilaiKriteriaController::new');
-    $routes->get('nilai-kriteria/(:num)/edit', 'NilaiKriteriaController::edit/$1');
+    $routes->get('nilai-kriteria/edit', 'NilaiKriteriaController::editMatrix');
     $routes->get('nilai-kriteria/(:num)', 'NilaiKriteriaController::show/$1');
     $routes->post('nilai-kriteria', 'NilaiKriteriaController::store');
+    $routes->post('nilai-kriteria/matrix', 'NilaiKriteriaController::saveMatrix');
+    $routes->post('nilai-kriteria/clear', 'NilaiKriteriaController::clearAll');
     $routes->put('nilai-kriteria/(:num)', 'NilaiKriteriaController::update/$1');
     $routes->patch('nilai-kriteria/(:num)', 'NilaiKriteriaController::update/$1');
     $routes->delete('nilai-kriteria/(:num)', 'NilaiKriteriaController::delete/$1');
