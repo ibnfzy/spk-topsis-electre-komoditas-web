@@ -72,18 +72,24 @@
                                 <?php foreach ($kriteriaList as $kriteria): ?>
                                     <?php $kriteriaId = $kriteria['id'] ?? $kriteria['kriteria_id'] ?? null; ?>
                                     <?php $currentValue = $nilaiMatrix[$komoditasId][$kriteriaId] ?? null; ?>
+                                    <?php $komoditasName = $komoditas['nama_komoditas'] ?? $komoditas['nama'] ?? 'Komoditas'; ?>
+                                    <?php $kriteriaName = $kriteria['nama_kriteria'] ?? $kriteria['kode'] ?? 'Kriteria'; ?>
                                     <td class="px-6 py-4 align-middle">
                                         <div class="relative">
                                             <input
                                                 type="number"
-                                                min="0"
-                                                step="0.01"
+                                                min="1"
+                                                max="10"
+                                                step="1"
+                                                inputmode="numeric"
                                                 data-komoditas="<?= esc($komoditasId); ?>"
                                                 data-kriteria="<?= esc($kriteriaId); ?>"
+                                                data-komoditas-name="<?= esc($komoditasName); ?>"
+                                                data-kriteria-name="<?= esc($kriteriaName); ?>"
                                                 name="nilai[<?= esc($komoditasId); ?>][<?= esc($kriteriaId); ?>]"
                                                 value="<?= esc($currentValue ?? ''); ?>"
                                                 class="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-2.5 text-sm text-slate-600 focus:border-primary focus:ring-2 focus:ring-primary/20 transition"
-                                                placeholder="0.00"
+                                                placeholder="1-10"
                                             >
                                         </div>
                                     </td>
@@ -167,6 +173,7 @@
         const tipsToggle = document.getElementById('tipsToggle');
         const tipsContent = document.getElementById('tipsContent');
         let tipsVisible = true;
+        let hideTimeout;
 
         tipsToggle?.addEventListener('click', () => {
             tipsVisible = !tipsVisible;
@@ -176,7 +183,11 @@
             tipsToggle.setAttribute('aria-expanded', tipsVisible ? 'true' : 'false');
         });
 
-        const showAlert = (message, type = 'success') => {
+        const showAlert = (message, type = 'success', autoHide = false) => {
+            if (hideTimeout) {
+                clearTimeout(hideTimeout);
+                hideTimeout = null;
+            }
             alertBox.textContent = message;
             alertBox.className = `mt-6 rounded-2xl border px-4 py-3 text-sm ${type === 'success' ? 'border-emerald-200 bg-emerald-50 text-emerald-600' : 'border-rose-200 bg-rose-50 text-rose-600'}`;
             alertBox.classList.remove('hidden');
@@ -184,6 +195,60 @@
                 { opacity: 0, transform: 'translateY(-4px)' },
                 { opacity: 1, transform: 'translateY(0)' }
             ], { duration: 280, easing: 'ease-out', fill: 'forwards' });
+
+            if (autoHide) {
+                hideTimeout = setTimeout(() => {
+                    alertBox.animate([
+                        { opacity: 1, transform: 'translateY(0)' },
+                        { opacity: 0, transform: 'translateY(-4px)' }
+                    ], { duration: 240, easing: 'ease-in', fill: 'forwards' }).onfinish = () => {
+                        alertBox.classList.add('hidden');
+                    };
+                }, 2000);
+            }
+        };
+
+        const showValidationAlert = (message) => showAlert(message, 'error', true);
+
+        const validateMatrix = () => {
+            inputs.forEach((input) => input.classList.remove('ring-2', 'ring-rose-200', 'border-rose-300'));
+
+            for (const input of inputs) {
+                const rawValue = input.value.trim();
+                const komoditasName = input.dataset.komoditasName || `Komoditas ${input.dataset.komoditas}`;
+                const kriteriaName = input.dataset.kriteriaName || `Kriteria ${input.dataset.kriteria}`;
+
+                if (rawValue === '') {
+                    input.classList.add('ring-2', 'ring-rose-200', 'border-rose-300');
+                    showValidationAlert(`Nilai untuk ${komoditasName} - ${kriteriaName} wajib diisi.`);
+                    input.focus();
+                    return false;
+                }
+
+                const numericValue = Number(rawValue);
+                if (!Number.isFinite(numericValue)) {
+                    input.classList.add('ring-2', 'ring-rose-200', 'border-rose-300');
+                    showValidationAlert(`Nilai ${komoditasName} - ${kriteriaName} harus berupa angka.`);
+                    input.focus();
+                    return false;
+                }
+
+                if (!Number.isInteger(numericValue)) {
+                    input.classList.add('ring-2', 'ring-rose-200', 'border-rose-300');
+                    showValidationAlert(`Nilai ${komoditasName} - ${kriteriaName} harus berupa bilangan bulat.`);
+                    input.focus();
+                    return false;
+                }
+
+                if (numericValue < 1 || numericValue > 10) {
+                    input.classList.add('ring-2', 'ring-rose-200', 'border-rose-300');
+                    showValidationAlert(`Nilai ${komoditasName} - ${kriteriaName} harus berada pada rentang 1 sampai 10.`);
+                    input.focus();
+                    return false;
+                }
+            }
+
+            return true;
         };
 
         const collectPayload = () => {
@@ -202,7 +267,11 @@
 
         saveButton?.addEventListener('click', () => {
             if (!inputs.length) {
-                showAlert('Tidak ada nilai yang dapat disimpan.', 'error');
+                showAlert('Tidak ada nilai yang dapat disimpan.', 'error', true);
+                return;
+            }
+
+            if (!validateMatrix()) {
                 return;
             }
 

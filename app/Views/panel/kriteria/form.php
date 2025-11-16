@@ -54,6 +54,52 @@
         const submitUrl = '<?= $formAction; ?>';
         const method = '<?= strtoupper($submitMethod); ?>';
 
+        const showValidationAlert = (message) => {
+            const existing = document.querySelector('.validation-alert');
+            existing?.remove();
+            const alert = document.createElement('div');
+            alert.textContent = message;
+            alert.role = 'alert';
+            alert.className = 'validation-alert fixed top-6 right-6 z-50 max-w-sm rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700 shadow-lg transition-all duration-300';
+            document.body.appendChild(alert);
+            setTimeout(() => {
+                alert.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => alert.remove(), 300);
+            }, 2000);
+        };
+
+        const validateForm = () => {
+            const kode = form.kode_kriteria.value.trim();
+            const nama = form.nama_kriteria.value.trim();
+            const jenis = form.jenis.value;
+
+            if (!kode) {
+                showValidationAlert('Kode kriteria wajib diisi.');
+                form.kode_kriteria.focus();
+                return false;
+            }
+
+            if (!/^[A-Za-z0-9_-]+$/.test(kode)) {
+                showValidationAlert('Kode kriteria hanya boleh berisi huruf, angka, tanda hubung, atau garis bawah.');
+                form.kode_kriteria.focus();
+                return false;
+            }
+
+            if (!nama || nama.length < 3) {
+                showValidationAlert('Nama kriteria minimal terdiri dari 3 karakter.');
+                form.nama_kriteria.focus();
+                return false;
+            }
+
+            if (!jenis) {
+                showValidationAlert('Silakan pilih jenis kriteria.');
+                form.jenis.focus();
+                return false;
+            }
+
+            return true;
+        };
+
         const showFeedback = (message, type = 'success') => {
             feedback.textContent = message;
             feedback.className = `rounded-xl px-4 py-3 text-sm border ${type === 'success' ? 'border-emerald-200 bg-emerald-50 text-emerald-600' : 'border-rose-200 bg-rose-50 text-rose-600'}`;
@@ -62,6 +108,9 @@
 
         form.addEventListener('submit', (event) => {
             event.preventDefault();
+            if (!validateForm()) {
+                return;
+            }
             const formData = new FormData(form);
             const payload = {};
             formData.forEach((value, key) => {

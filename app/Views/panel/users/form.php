@@ -50,6 +50,46 @@
         const feedback = document.getElementById('formFeedback');
         const submitUrl = '<?= $formAction; ?>';
         const method = '<?= strtoupper($submitMethod); ?>';
+        const isEditing = <?= isset($record) && $record ? 'true' : 'false'; ?>;
+
+        const showValidationAlert = (message) => {
+            const existing = document.querySelector('.validation-alert');
+            existing?.remove();
+            const alert = document.createElement('div');
+            alert.textContent = message;
+            alert.role = 'alert';
+            alert.className = 'validation-alert fixed top-6 right-6 z-50 max-w-sm rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700 shadow-lg transition-all duration-300';
+            document.body.appendChild(alert);
+            setTimeout(() => {
+                alert.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => alert.remove(), 300);
+            }, 2000);
+        };
+
+        const validateForm = () => {
+            const username = form.username.value.trim();
+            const password = form.password.value.trim();
+
+            if (!username || username.length < 3) {
+                showValidationAlert('Username wajib diisi dan minimal 3 karakter.');
+                form.username.focus();
+                return false;
+            }
+
+            if (!/^[a-zA-Z0-9._-]+$/.test(username)) {
+                showValidationAlert('Username hanya boleh berisi huruf, angka, titik, garis bawah, atau tanda hubung.');
+                form.username.focus();
+                return false;
+            }
+
+            if ((!isEditing && password.length < 8) || (password && password.length < 8)) {
+                showValidationAlert('Password minimal terdiri dari 8 karakter.');
+                form.password.focus();
+                return false;
+            }
+
+            return true;
+        };
 
         const showFeedback = (message, type = 'success') => {
             feedback.textContent = message;
@@ -59,6 +99,9 @@
 
         form.addEventListener('submit', (event) => {
             event.preventDefault();
+            if (!validateForm()) {
+                return;
+            }
             const formData = new FormData(form);
             const payload = {};
             formData.forEach((value, key) => {
