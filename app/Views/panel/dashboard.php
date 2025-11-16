@@ -43,7 +43,7 @@
         <div id="dashboardAlert" class="mt-6 hidden rounded-2xl border px-4 py-3 text-sm"></div>
     </header>
 
-    <section class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+    <section class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
         <?php
         $statCards = [
             [
@@ -63,13 +63,7 @@
                 'value' => $stats['nilai_kriteria'] ?? 0,
                 'description' => 'Penilaian komoditas yang tersimpan',
                 'icon' => 'M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5',
-            ],
-            [
-                'label' => 'Total Perhitungan',
-                'value' => $stats['perhitungan'] ?? 0,
-                'description' => 'Riwayat proses TOPSIS & ELECTRE',
-                'icon' => 'M12 8.25v7.5m3.75-3.75h-7.5',
-            ],
+            ]
         ];
         ?>
         <?php foreach ($statCards as $card): ?>
