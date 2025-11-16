@@ -39,8 +39,9 @@
         <div id="matrixAlert" class="mt-6 hidden rounded-2xl border px-4 py-3 text-sm"></div>
     </header>
 
-    <div class="rounded-3xl bg-white/90 border border-slate-200 shadow-floating overflow-hidden">
-        <div class="overflow-x-auto">
+    <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px] lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
+        <div class="rounded-3xl bg-white/90 border border-slate-200 shadow-floating overflow-hidden">
+            <div class="overflow-x-auto">
             <?php
                 $komoditasList = $komoditasOptions ?? $komoditasList ?? [];
                 $kriteriaList = $kriteriaOptions ?? $kriteriaList ?? [];
@@ -106,7 +107,40 @@
                     <?php endif; ?>
                 </tbody>
             </table>
+            </div>
         </div>
+        <aside class="rounded-3xl border border-slate-200 bg-white/90 shadow-floating p-6 space-y-4" aria-live="polite">
+            <div class="flex items-start gap-3">
+                <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 17.25v.008h.008V17.25H12zm0-10.5V6.75m0 0a.375.375 0 110-.75.375.375 0 010 .75zM12 6.75v6" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12a8.25 8.25 0 1116.5 0 8.25 8.25 0 01-16.5 0z" />
+                    </svg>
+                </span>
+                <div>
+                    <p class="text-xs uppercase tracking-[0.35em] text-primary/70 font-semibold">Tips</p>
+                    <h2 class="text-lg font-semibold text-slate-900">Panduan Nilai Kriteria</h2>
+                    <p class="text-sm text-slate-500">Gunakan panduan ini sebelum mengisi matrix agar nilai antar komoditas konsisten.</p>
+                </div>
+            </div>
+            <button id="tipsToggle" type="button" aria-expanded="true" aria-controls="tipsContent" class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 hover:border-primary hover:text-primary transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+                <span>Tampilkan/Sembunyikan Tips</span>
+            </button>
+            <div id="tipsContent" class="space-y-4 text-sm text-slate-600">
+                <ul class="list-disc space-y-2 pl-5">
+                    <li>Gunakan rentang nilai 1-10: 1 menunjukkan kondisi terburuk, 10 menandakan kondisi terbaik yang umum dijumpai pada studi tambak air payau.</li>
+                    <li>Kualitas air (salinitas, pH, DO) diberi nilai tinggi bila mendekati standar optimal komoditas yang diolah.</li>
+                    <li>Kondisi tanah mendapat nilai tinggi jika tekstur stabil, tidak mengandung sulfat berlebih, dan siap mendukung budidaya.</li>
+                    <li>Nilai infrastruktur berdasarkan kedekatan dengan jalan utama, pasar, serta kemudahan logistik pendukung.</li>
+                    <li>Risiko lingkungan diberi nilai tinggi ketika lokasi minim ancaman banjir, erosi, maupun cuaca ekstrem.</li>
+                </ul>
+                <p class="text-slate-500">Catatan: Nilai bersifat panduan dan merujuk pada Tarunamulia (2024), Hardianto (2022), Rossignoli (2023), serta Apine (2023) yang menekankan kualitas tanah-air, efisiensi lahan, aspek teknis akses lingkungan, dan faktor risiko keberlanjutan.</p>
+                <p class="text-slate-500">Seluruh nilai akan diproses otomatis dalam perhitungan TOPSIS dan ELECTRE sehingga konsistensi input sangat penting.</p>
+            </div>
+        </aside>
     </div>
 
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -130,6 +164,17 @@
         const alertBox = document.getElementById('matrixAlert');
         const inputs = Array.from(document.querySelectorAll('input[data-komoditas][data-kriteria]'));
         const endpoint = '<?= esc($matrixEndpoint ?? base_url('panel/nilai-kriteria/matrix')); ?>';
+        const tipsToggle = document.getElementById('tipsToggle');
+        const tipsContent = document.getElementById('tipsContent');
+        let tipsVisible = true;
+
+        tipsToggle?.addEventListener('click', () => {
+            tipsVisible = !tipsVisible;
+            if (tipsContent) {
+                tipsContent.classList.toggle('hidden', !tipsVisible);
+            }
+            tipsToggle.setAttribute('aria-expanded', tipsVisible ? 'true' : 'false');
+        });
 
         const showAlert = (message, type = 'success') => {
             alertBox.textContent = message;
