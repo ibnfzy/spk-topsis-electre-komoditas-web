@@ -131,7 +131,7 @@
             </button>
             <div id="tipsContent" class="space-y-4 text-sm text-slate-600">
                 <ul class="list-disc space-y-2 pl-5">
-                    <li>Gunakan rentang nilai 1-10: 1 menunjukkan kondisi terburuk, 5 menandakan kondisi terbaik yang umum dijumpai pada studi tambak air payau.</li>
+                    <li>Gunakan rentang nilai 1-10: 1 menunjukkan kondisi terburuk, 10 menandakan kondisi terbaik yang umum dijumpai pada studi tambak air payau.</li>
                     <li>Kualitas air (salinitas, pH, DO) diberi nilai tinggi bila mendekati standar optimal komoditas yang diolah.</li>
                     <li>Kondisi tanah mendapat nilai tinggi jika tekstur stabil, tidak mengandung sulfat berlebih, dan siap mendukung budidaya.</li>
                     <li>Nilai infrastruktur berdasarkan kedekatan dengan jalan utama, pasar, serta kemudahan logistik pendukung.</li>
